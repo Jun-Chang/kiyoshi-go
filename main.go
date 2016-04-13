@@ -1,15 +1,15 @@
 package main
 
 import (
-"bytes"
-"encoding/json"
-"fmt"
-"io/ioutil"
-"log"
-"net/http"
-"net/url"
-"os"
-"time"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"time"
 )
 
 // ReceivedMessage ...
@@ -75,13 +75,15 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	apiURI := EndPoint + "/v1/events"
 	for _, result := range m.Result {
+		log.Println(m.Result)
 		from := result.Content.From
-		text := result.Content.Text
-		content := new(Content)
-		content.ContentType = result.Content.ContentType
-		content.ToType = result.Content.ToType
-		content.Text = text
-		request(apiURI, "POST", []string{from}, *content)
+		if text := Judge(from, result.Content.Text); text != "" {
+			content := new(Content)
+			content.ContentType = result.Content.ContentType
+			content.ToType = result.Content.ToType
+			content.Text = text
+			request(apiURI, "POST", []string{from}, *content)
+		}
 	}
 }
 
@@ -136,4 +138,3 @@ func getProxyURL() *url.URL {
 	}
 	return proxyURL
 }
-
